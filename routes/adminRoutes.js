@@ -1,8 +1,7 @@
 const express = require("express");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
-// const Admin = require("../models/adminSchema"); // Import Admin Schema
-const Admin = require("../models/adminSchema"); // Import Admin Schema
+const Admin=require("../models/adminSchema")
 const router = express.Router();
 require('dotenv').config();
 
