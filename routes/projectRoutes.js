@@ -1,5 +1,5 @@
 const express = require("express");
-const Project = require("../models/ProjectSchema"); // Import Project Schema
+const Project = require("../models/projectSchema"); // Import Project Schema
 const router = express.Router();
 
 // Add New Project (Admin Only)
