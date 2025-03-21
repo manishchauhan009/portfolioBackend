@@ -1,5 +1,5 @@
 const express = require("express");
-const Contact = require("../models/ContactSchema"); // Import Contact Schema
+const Contact = require("../models/contactSchema"); // Import Contact Schema
 const router = express.Router();
 
 // Submit Contact Form
