@@ -8,13 +8,6 @@ const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
-// const requiredEnvVars = ["PORT", "FRONTEND_URL"];
-// requiredEnvVars.forEach((key) => {
-//   if (!process.env[key]) {
-//     console.error(`ERROR: Missing environment variable: ${key}`);
-//     process.exit(1);
-//   }
-// });
 
 const PORT = process.env.PORT || 4000;
 const app = express();
