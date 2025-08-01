@@ -18,7 +18,11 @@ const projectSchema = new mongoose.Schema({
   link: {
     type: String,
     required: true,
-    // match: /^https?:\/\/.+/,
+  },
+  category: {
+    type: String,
+    required: true,
+    enum: ["Web", "AI", "Data Science", "Mobile", "Others"], // Add more categories as needed
   },
   createdAt: {
     type: Date,

@@ -5,13 +5,22 @@ const router = express.Router();
 // Add New Project (Admin Only)
 router.post("/add", async (req, res) => {
   try {
-    const newProject = new Project(req.body);
+    const { title, description, image, link, category } = req.body;
+
+    if (!title || !description || !image || !link || !category) {
+      return res.status(400).json({ error: "All fields are required." });
+    }
+
+    const newProject = new Project({ title, description, image, link, category });
     await newProject.save();
+
     res.status(201).json({ message: "Project added successfully!" });
   } catch (error) {
+    console.error("❌ Project creation error:", error);
     res.status(500).json({ error: "Failed to add project" });
   }
 });
+
 
 // Get All Projects
 router.get("/", async (req, res) => {
