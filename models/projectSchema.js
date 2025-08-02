@@ -22,7 +22,7 @@ const projectSchema = new mongoose.Schema({
   category: {
     type: String,
     required: true,
-    enum: ["Web", "AI", "Data Science", "Mobile", "Others"], // Add more categories as needed
+    enum: ["web", "ai", "data science", "mobile", "Others"], // Add more categories as needed
   },
   createdAt: {
     type: Date,
