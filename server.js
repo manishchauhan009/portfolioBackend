@@ -20,7 +20,7 @@ app.use(
     allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
-app.use(cors());
+// app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());
