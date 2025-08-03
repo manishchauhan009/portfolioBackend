@@ -17,4 +17,9 @@ const getMessage=async (req, res) => {
     res.status(500).json({ error: "Failed to fetch messages" });
   }
 }
-module.exports={submitForm,getMessage}
+
+const getMessageCount= async (req, res) => {
+  const count = await Contact.countDocuments();
+  res.json({ count });
+}
+module.exports={submitForm,getMessage,getMessageCount}

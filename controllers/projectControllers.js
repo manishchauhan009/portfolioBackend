@@ -39,6 +39,12 @@ const getupdateProject = async (req, res) => {
   }
 };
 
+const getProjectCount=async (req, res) => {
+    console.log("Count Got")
+  const count = await Project.countDocuments();
+  res.json({ count });
+}
+
 const updateProject = async (req, res) => {
   try {
     const updatedProject = await Project.findByIdAndUpdate(
@@ -67,4 +73,4 @@ const deleteProject= async (req, res) => {
     res.status(500).json({ error: "Failed to delete project" });
   }
 }
-module.exports={addProject,getProject,getupdateProject,deleteProject,updateProject}
+module.exports={addProject,getProject,getupdateProject,deleteProject,updateProject,getProjectCount}
