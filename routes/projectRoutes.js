@@ -1,5 +1,5 @@
 const express = require("express");
-const { addProject, getProject, updateProject, deleteProject } = require("../controllers/projectControllers");
+const { addProject, getProject, getupdateProject, deleteProject ,updateProject} = require("../controllers/projectControllers");
 const router = express.Router();
 
 // Add New Project (Admin Only)
@@ -9,7 +9,8 @@ router.post("/add", addProject);
 router.get("/",getProject);
 
 // Update Project (Admin Only)
-router.put("/update/:id", updateProject);
+router.get("/update/:id", getupdateProject);
+router.post("/update/:id", updateProject);
 
 // Delete Project (Admin Only)
 router.delete("/delete/:id",deleteProject);
