@@ -25,6 +25,7 @@ const getBlogs = async (req, res) => {
     const blogs = await Blog.find().sort({ createdAt: -1 });
     res.status(200).json(blogs);
   } catch (err) {
+    console.error("Error fetching blogs:", err);
     res.status(500).json({ success: false, message: "❌ Failed to fetch blogs", error: err.message });
   }
 };
@@ -36,6 +37,7 @@ const getBlogById = async (req, res) => {
     if (!blog) return res.status(404).json({ message: "Blog not found" });
     res.status(200).json(blog);
   } catch (err) {
+    console.error("Error fetching blog:", err);
     res.status(500).json({ success: false, message: "❌ Failed to fetch blog", error: err.message });
   }
 };
@@ -50,7 +52,9 @@ const updateBlog = async (req, res) => {
 
     // If new image provided & different -> delete old from Cloudinary
     if (image && image.public_id && image.url && blog.image?.public_id !== image.public_id) {
-      if (blog.image?.public_id) await cloudinary.v2.uploader.destroy(blog.image.public_id);
+      if (blog.image?.public_id) {
+        await cloudinary.uploader.destroy(blog.image.public_id);
+      }
       blog.image = image;
     }
 
@@ -61,26 +65,31 @@ const updateBlog = async (req, res) => {
     await blog.save();
     res.status(200).json({ success: true, message: "✅ Blog updated successfully", blog });
   } catch (err) {
+    console.error("Error updating blog:", err);
     res.status(500).json({ success: false, message: "❌ Failed to update blog", error: err.message });
   }
 };
 
-// 🗑️ Delete Blog (with Cloudinary cleanup)
 const deleteBlog = async (req, res) => {
   try {
     const blog = await Blog.findById(req.params.id);
-    if (!blog) return res.status(404).json({ message: "Blog not found" });
+    if (!blog) {
+      return res.status(404).json({ message: "Blog not found" });
+    }
 
-    if (blog.image?.public_id) {
-      await cloudinary.v2.uploader.destroy(blog.image.public_id);
+    // ✅ Only delete if blog has a public_id
+    if (blog.image && blog.image.public_id) {
+      await cloudinary.uploader.destroy(blog.image.public_id);
     }
 
     await blog.deleteOne();
-    res.status(200).json({ success: true, message: "🗑️ Blog deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ success: false, message: "❌ Failed to delete blog", error: err.message });
+    res.json({ message: "Blog deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting blog:", error);
+    res.status(500).json({ message: "Server Error" });
   }
 };
+
 
 // 🔢 Count Blogs
 const getBlogCount = async (req, res) => {
@@ -88,6 +97,7 @@ const getBlogCount = async (req, res) => {
     const count = await Blog.countDocuments();
     res.status(200).json({ count });
   } catch (err) {
+    console.error("Error counting blogs:", err);
     res.status(500).json({ success: false, message: "❌ Failed to count blogs", error: err.message });
   }
 };
@@ -98,9 +108,10 @@ const deleteImage = async (req, res) => {
     const { public_id } = req.body;
     if (!public_id) return res.status(400).json({ message: "No image provided" });
 
-    await cloudinary.v2.uploader.destroy(public_id);
+    await cloudinary.uploader.destroy(public_id);
     res.json({ success: true, message: "Image deleted successfully" });
   } catch (err) {
+    console.error("Error deleting image:", err);
     res.status(500).json({ success: false, message: "Error deleting image", error: err.message });
   }
 };
@@ -112,5 +123,5 @@ module.exports = {
   updateBlog,
   deleteBlog,
   getBlogCount,
-  deleteImage
+  deleteImage,
 };

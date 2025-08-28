@@ -11,7 +11,7 @@ router.get("/",getProject);
 
 // Update Project (Admin Only)
 router.get("/update/:id", getupdateProject);
-router.post("/update/:id", updateProject);
+router.put("/update/:id", updateProject);
 router.get('/count', getProjectCount);
 
 
