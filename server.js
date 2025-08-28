@@ -4,23 +4,25 @@ const dbConnect = require("./config/databaseConnection");
 const contactRoutes=require('./routes/contactRoutes');
 const projectRoutes=require('./routes/projectRoutes');
 const adminRoutes=require('./routes/adminRoutes');
+const blogRoutes=require('./routes/blogRoutes');
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
 
 
+
 const PORT = process.env.PORT || 4000;
 const app = express();
 
-// app.use(
-//   cors({
-//     origin: process.env.FRONTEND_URL,
-//     credentials: true,
-//     methods: ["GET", "POST", "PUT", "DELETE"],
-//     allowedHeaders: ["Content-Type", "Authorization"],
-//   })
-// );
-app.use(cors());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+    methods: ["GET", "POST", "PUT", "DELETE"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+  })
+);
+// app.use(cors());
 
 app.use(express.json());
 app.use(cookieParser());
@@ -28,11 +30,7 @@ app.use(cookieParser());
 app.use("/api/contacts", contactRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/admin", adminRoutes);
-
-
-app.get("/", (req, res) => {
-  res.status(200).send("Server is up and running!");
-});
+app.use("/api/blogs", blogRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

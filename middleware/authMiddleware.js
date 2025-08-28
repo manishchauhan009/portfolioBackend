@@ -19,7 +19,6 @@ const authMiddleware = async (req, res, next) => {
   try {
     const verified = jwt.verify(token, process.env.JWT_SECRET);
     req.user = verified;  // Attach user info to request object
-    console.log("Authenticated User:", verified);
     next();
   } catch (error) {
     console.error("Authentication Error:", error);
@@ -51,7 +50,6 @@ const isAdmin = async (req, res, next) => {
     }
 
     req.user = decoded;  // Attach decoded token to request object
-    console.log("Admin Authorized:", decoded);
     next();
   } catch (error) {
     console.error("Authorization Error:", error);
