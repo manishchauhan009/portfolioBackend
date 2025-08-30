@@ -5,6 +5,7 @@ const contactRoutes=require('./routes/contactRoutes');
 const projectRoutes=require('./routes/projectRoutes');
 const adminRoutes=require('./routes/adminRoutes');
 const blogRoutes=require('./routes/blogRoutes');
+const resumeRoutes=require('./routes/resumeRoutes')
 const { notFound, errorHandler } = require("./middleware/errorMiddleware");
 const cookieParser = require("cookie-parser");
 require("dotenv").config();
@@ -31,6 +32,7 @@ app.use("/api/contacts", contactRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/blogs", blogRoutes);
+app.use("/api/resume", resumeRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
