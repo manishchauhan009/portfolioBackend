@@ -50,9 +50,7 @@ const getBlogs = async (req, res, next) => {
 
     if (category) filter.category = category;
     if (tag) filter.tags = { $in: [tag] };
-    if (search) {
-      filter.$text = { $search: search };
-    }
+    if (search) filter.$text = { $search: search };
 
     const blogs = await Blog.find(filter)
       .sort({ createdAt: -1 })
@@ -61,7 +59,6 @@ const getBlogs = async (req, res, next) => {
 
     const total = await Blog.countDocuments(filter);
     const totalPages = Math.ceil(total / limit);
-
     res.json({ total, page: Number(page), totalPages, blogs });
   } catch (err) {
     next(err);
@@ -108,15 +105,22 @@ const updateBlog = async (req, res, next) => {
     const blog = await Blog.findById(id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
+    // ✅ Handle image safely
     if (image && image.public_id && blog.image?.public_id !== image.public_id) {
-      await cloudinary.uploader.destroy(blog.image.public_id);
+      try {
+        await cloudinary.uploader.destroy(blog.image.public_id);
+      } catch (err) {
+        console.warn("⚠️ Failed to delete old image:", err.message);
+      }
       blog.image = image;
     }
 
+    // ✅ Update slug only if title changes
     if (title && title !== blog.title) {
       blog.slug = slugify(title, { lower: true, strict: true });
     }
 
+    // ✅ Merge updates (excluding image)
     Object.assign(blog, {
       title,
       description,
@@ -147,7 +151,11 @@ const deleteBlog = async (req, res, next) => {
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
     if (blog.image?.public_id) {
-      await cloudinary.uploader.destroy(blog.image.public_id);
+      try {
+        await cloudinary.uploader.destroy(blog.image.public_id);
+      } catch (err) {
+        console.warn("⚠️ Failed to delete image from Cloudinary:", err.message);
+      }
     }
 
     await blog.deleteOne();
@@ -167,35 +175,30 @@ const getBlogCount = async (req, res, next) => {
   }
 };
 
-// ❤️ Like Blog
+// ❤️ Like Blog (toggle by IP)
 const likeBlog = async (req, res, next) => {
   try {
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
 
-    const userIp = req.ip; // get visitor IP
+    const userIp = req.ip;
 
     if (blog.likes.includes(userIp)) {
-      // If already liked, remove like (toggle)
       blog.likes = blog.likes.filter((ip) => ip !== userIp);
     } else {
       blog.likes.push(userIp);
     }
 
     await blog.save();
-
-    // Send like count as number
     res.json({ success: true, likes: blog.likes.length });
   } catch (err) {
     next(err);
   }
 };
 
-
 // 💬 Add Comment
 const addComment = async (req, res, next) => {
   try {
-    console.log("Your Comment is ", req.body)
     const { author, text } = req.body;
     const blog = await Blog.findById(req.params.id);
     if (!blog) return res.status(404).json({ message: "Blog not found" });
@@ -218,16 +221,13 @@ const incrementViews = async (req, res) => {
       { new: true }
     );
 
-    if (!blog) {
-      return res.status(404).json({ message: "Blog not found" });
-    }
+    if (!blog) return res.status(404).json({ message: "Blog not found" });
 
     res.status(200).json(blog);
   } catch (err) {
     res.status(500).json({ message: "Error incrementing views", error: err.message });
   }
 };
-
 
 module.exports = {
   addBlog,
@@ -238,5 +238,5 @@ module.exports = {
   getBlogCount,
   likeBlog,
   addComment,
-  incrementViews
+  incrementViews,
 };
